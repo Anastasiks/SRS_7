@@ -1,0 +1,419 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Задачи — StudyFlow{% endblock %}
+
+{% block content %}
+<div class="page-header mb-3">
+    <h2 class="page-title">Мои задачи</h2>
+    <div class="text-secondary mt-1">
+        Создавай задачи и следи за их выполнением
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h3 class="card-title">Создать задачу</h3>
+    </div>
+
+    <div class="card-body">
+        <form id="task-form" data-url="{% url 'create_task_ajax' %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Название задачи</label>
+                <input
+                    type="text"
+                    name="title"
+                    class="form-control"
+                    placeholder="Например, решить задание № 5"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <textarea
+                    name="description"
+                    class="form-control"
+                    rows="2"
+                    placeholder="Что нужно сделать?"
+                ></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Проект</label>
+                <select name="project" class="form-select" required>
+                    <option value="">Выбери проект</option>
+                    {% for project in projects %}
+                    <option value="{{ project.id }}">
+                        {{ project.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-md-4 mb-3">
+                    <label class="form-label">Статус</label>
+
+                    <select name="status" class="form-select">
+                        <option value="new">Новая</option>
+                        <option value="pending">На согласовании</option>
+                        <option value="assigned">Назначена</option>
+                        <option value="rejected">Отклонена</option>
+                        <option value="in_progress">В работе</option>
+                        <option value="done">Завершена</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-4 mb-3">
+                    <label class="form-label">Приоритет</label>
+                    <select name="priority" class="form-select">
+                        <option value="low">Низкий</option>
+                        <option value="medium" selected>Средний</option>
+                        <option value="high">Высокий</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-4 mb-3">
+                    <label class="form-label">Дедлайн</label>
+                    <input type="date" name="deadline" class="form-control">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Создать задачу
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input
+            type="text"
+            id="task-search"
+            class="form-control"
+            placeholder="Поиск по названию задачи">
+    </div>
+
+    <div class="col-md-6">
+        <select id="task-filter" class="form-select">
+            <option value="all">Все статусы</option>
+            <option value="new">Новые</option>
+            <option value="in_progress">В работе</option>
+            <option value="done">Завершённые</option>
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Список задач</h3>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+            <thead>
+            <tr>
+                <th>Задача</th>
+                <th>Проект</th>
+                <th>Статус</th>
+                <th>Приоритет</th>
+                <th>Дедлайн</th>
+            </tr>
+            </thead>
+
+            <tbody id="tasks-table-body">
+            {% for task in tasks %}
+           <tr
+    data-task-id="{{ task.id }}"
+    data-title="{{ task.title|lower }}"
+    data-status="{{ task.status }}"
+>
+                <td>
+                    <strong>{{ task.title }}</strong>
+                    {% if task.description %}
+                    <div class="text-secondary small">
+                        {{ task.description }}
+                    </div>
+                    {% endif %}
+                </td>
+                <td>{{ task.project.name }}</td>
+                <td>
+
+<select
+    class="form-select form-select-sm task-status"
+    data-current-status="{{ task.status }}"
+>
+    {% if task.status == "new" %}
+        <option value="new" selected>Новая</option>
+        <option value="pending">На согласовании</option>
+    {% elif task.status == "pending" %}
+        <option value="pending" selected>На согласовании</option>
+        <option value="assigned">Назначена</option>
+        <option value="rejected">Отклонена</option>
+    {% elif task.status == "assigned" %}
+        <option value="assigned" selected>Назначена</option>
+        <option value="in_progress">В работе</option>
+    {% elif task.status == "in_progress" %}
+        <option value="in_progress" selected>В работе</option>
+        <option value="done">Завершена</option>
+    {% elif task.status == "done" %}
+        <option value="done" selected>Завершена</option>
+    {% elif task.status == "rejected" %}
+        <option value="rejected" selected>Отклонена</option>
+    {% endif %}
+</select>
+
+                </td>
+                <td>{{ task.get_priority_display }}</td>
+                <td>
+                    {% if task.deadline %}
+                        {{ task.deadline|date:"d.m.Y" }}
+                    {% else %}
+                        Не указан
+                    {% endif %}
+                </td>
+                <td>
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm delete-task"
+                        data-url="{% url 'delete_task_ajax' task.id %}">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center p-4">
+                    Задач пока нет. Создай первую выше.
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("task-form");
+    const tableBody = document.getElementById("tasks-table-body");
+
+    if (!form || !tableBody) return;
+
+    const message = document.createElement("div");
+    message.className = "alert mt-3 d-none";
+    form.before(message);
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        try {
+            const response = await fetch(form.dataset.url, {
+                method: "POST",
+                body: new FormData(form),
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || "Не удалось добавить задачу");
+            }
+
+            const task = data.task;
+            const row = document.createElement("tr");
+            row.dataset.title = task.title.toLowerCase();
+            row.dataset.status = task.status === "Новая" ? "new"
+                : task.status === "В работе" ? "in_progress"
+                : "done";
+
+            [
+                task.title,
+                task.project,
+                task.status,
+                task.priority,
+                task.deadline
+            ].forEach(function (value) {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+
+            tableBody.prepend(row);
+            form.reset();
+
+            message.textContent = "Задача успешно добавлена!";
+            message.className = "alert alert-success mt-3";
+        } catch (error) {
+            message.textContent = error.message || "Ошибка соединения с сервером";
+            message.className = "alert alert-danger mt-3";
+        }
+    });
+});
+
+
+document.addEventListener("change", async function(event) {
+    const select = event.target;
+
+    if (!select.classList.contains("task-status")) return;
+
+    const row = select.closest("tr");
+    const taskId = row.dataset.taskId;
+    const previousStatus = select.dataset.currentStatus;
+    const newStatus = select.value;
+
+    const formData = new FormData();
+    formData.append("status", newStatus);
+
+    if (newStatus === "assigned") {
+        const assignee = prompt("Введите ID пользователя, которого нужно назначить исполнителем:");
+
+        if (!assignee || !assignee.trim()) {
+            select.value = previousStatus;
+            return;
+        }
+
+        formData.append("assignee", assignee.trim());
+    }
+
+    if (newStatus === "rejected") {
+        const reason = prompt("Укажите причину отклонения задачи:");
+
+        if (!reason || !reason.trim()) {
+            select.value = previousStatus;
+            return;
+        }
+
+        formData.append("reason", reason.trim());
+    }
+
+    const csrfToken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+    )?.value;
+
+    select.disabled = true;
+
+    try {
+        const response = await fetch(
+            `/api/tasks/${taskId}/transition/`,
+            {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": csrfToken
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            const errorText = Object.values(data)
+                .flat()
+                .join(" ");
+            throw new Error(errorText || "Не удалось изменить статус");
+        }
+
+        select.dataset.currentStatus = data.status;
+        row.dataset.status = data.status;
+
+        const message = document.createElement("div");
+        message.className = "text-success small mt-1";
+        message.textContent = "Статус сохранён";
+
+        const oldMessage = select.parentElement.querySelector(
+            ".text-success"
+        );
+
+        if (oldMessage) oldMessage.remove();
+
+        select.parentElement.appendChild(message);
+
+    } catch (error) {
+        select.value = previousStatus;
+        alert(error.message || "Ошибка при изменении статуса");
+    } finally {
+        select.disabled = false;
+    }
+});
+
+
+    document.addEventListener("click", async function (event) {
+    const button = event.target.closest(".delete-task");
+
+    if (!button) return;
+
+    if (!confirm("Точно удалить эту задачу?")) return;
+
+    const csrfToken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+    )?.value;
+
+    if (!csrfToken) {
+        alert("Не найден CSRF-токен. Обнови страницу.");
+        return;
+    }
+
+    button.disabled = true;
+
+    try {
+        const response = await fetch(button.dataset.url, {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": csrfToken
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Не удалось удалить задачу");
+        }
+
+        button.closest("tr").remove();
+    } catch (error) {
+        alert(error.message || "Ошибка при удалении задачи");
+        button.disabled = false;
+    }
+});
+    const searchInput = document.getElementById("task-search");
+const statusFilter = document.getElementById("task-filter");
+
+function filterTasks() {
+    const query = searchInput.value.toLowerCase().trim();
+    const status = statusFilter.value;
+
+    document.querySelectorAll("#tasks-table-body tr").forEach(row => {
+        const title = row.dataset.title || "";
+        const rowStatus = row.dataset.status || "";
+
+        const matchesSearch = title.includes(query);
+        const matchesStatus = status === "all" || rowStatus === status;
+
+        row.hidden = !(matchesSearch && matchesStatus);
+    });
+
+    localStorage.setItem("studyflow_task_search", query);
+    localStorage.setItem("studyflow_task_status", status);
+}
+
+if (searchInput && statusFilter) {
+    searchInput.value = localStorage.getItem("studyflow_task_search") || "";
+    statusFilter.value = localStorage.getItem("studyflow_task_status") || "all";
+
+    searchInput.addEventListener("input", filterTasks);
+    statusFilter.addEventListener("change", filterTasks);
+
+    filterTasks();
+}
+</script>
+{% endblock %}

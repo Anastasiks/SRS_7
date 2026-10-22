@@ -1,0 +1,84 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Проекты — StudyFlow{% endblock %}
+
+{% block content %}
+<div class="page-header mb-3">
+    <h2 class="page-title">Мои проекты</h2>
+    <div class="text-secondary mt-1">
+        Все проекты в одном месте
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h3 class="card-title">Создать проект</h3>
+    </div>
+
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Название проекта</label>
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control"
+                    placeholder="Например, Подготовка к экзамену"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <textarea
+                    name="description"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Краткое описание проекта"
+                ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Создать проект
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Список проектов</h3>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Дата создания</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for project in projects %}
+            <tr>
+                <td><strong>{{ project.name }}</strong></td>
+                <td>{{ project.description|default:"Нет описания" }}</td>
+                <td>{{ project.created_at|date:"d.m.Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center p-4">
+                    Проектов пока нет. Создай первый выше.
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
