@@ -1,0 +1,260 @@
+[
+{
+  "model": "dashboard.project",
+  "pk": 1,
+  "fields": {
+    "name": "Подготовка",
+    "description": "йоу",
+    "created_at": "2026-10-19T18:50:01.685Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 1,
+  "fields": {
+    "title": "Сделать сальто назад",
+    "description": "поэтапно научиться",
+    "project": 1,
+    "owner": null,
+    "assignee": null,
+    "status": "in_progress",
+    "priority": "high",
+    "deadline": "2026-10-12",
+    "rejection_reason": "",
+    "created_at": "2026-10-21T17:33:18.866Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 3,
+  "fields": {
+    "title": "Сделать срс",
+    "description": "убиться",
+    "project": 1,
+    "owner": null,
+    "assignee": null,
+    "status": "done",
+    "priority": "high",
+    "deadline": "2026-12-20",
+    "rejection_reason": "",
+    "created_at": "2026-10-21T17:33:18.866Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 4,
+  "fields": {
+    "title": "Решить матан",
+    "description": "найти задания",
+    "project": 1,
+    "owner": null,
+    "assignee": null,
+    "status": "new",
+    "priority": "low",
+    "deadline": "2028-10-01",
+    "rejection_reason": "",
+    "created_at": "2026-10-21T17:33:18.866Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 5,
+  "fields": {
+    "title": "Тестовая задача СРС 7",
+    "description": "Проверка создания через REST API",
+    "project": 1,
+    "owner": 1,
+    "assignee": 1,
+    "status": "assigned",
+    "priority": "low",
+    "deadline": "2026-10-20",
+    "rejection_reason": "",
+    "created_at": "2026-10-21T17:47:50.681Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 7,
+  "fields": {
+    "title": "проверка",
+    "description": "проверить",
+    "project": 1,
+    "owner": 1,
+    "assignee": null,
+    "status": "pending",
+    "priority": "medium",
+    "deadline": "2026-10-10",
+    "rejection_reason": "",
+    "created_at": "2026-10-21T18:40:06.068Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 8,
+  "fields": {
+    "title": "йоу",
+    "description": "йоу",
+    "project": 1,
+    "owner": 1,
+    "assignee": 1,
+    "status": "assigned",
+    "priority": "medium",
+    "deadline": null,
+    "rejection_reason": "",
+    "created_at": "2026-10-21T18:40:53.608Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 9,
+  "fields": {
+    "title": "задача 7",
+    "description": "сделать",
+    "project": 1,
+    "owner": 1,
+    "assignee": 1,
+    "status": "done",
+    "priority": "medium",
+    "deadline": null,
+    "rejection_reason": "",
+    "created_at": "2026-10-21T18:42:29.576Z"
+  }
+},
+{
+  "model": "dashboard.task",
+  "pk": 10,
+  "fields": {
+    "title": "новая",
+    "description": "о",
+    "project": 1,
+    "owner": 1,
+    "assignee": null,
+    "status": "new",
+    "priority": "medium",
+    "deadline": "2026-10-10",
+    "rejection_reason": "",
+    "created_at": "2026-10-21T18:56:28.519Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 2,
+  "fields": {
+    "task": null,
+    "event_type": "updated",
+    "description": "Задача «Зачитать рэпчик» удалена",
+    "actor": null,
+    "created_at": "2026-10-21T12:30:16.899Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 3,
+  "fields": {
+    "task": 5,
+    "event_type": "pending",
+    "description": "Задача отправлена на согласование.",
+    "actor": 1,
+    "created_at": "2026-10-21T17:56:39.409Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 4,
+  "fields": {
+    "task": 5,
+    "event_type": "assigned",
+    "description": "Назначен исполнитель: nastya_admin.",
+    "actor": 1,
+    "created_at": "2026-10-21T18:18:43.913Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 5,
+  "fields": {
+    "task": 7,
+    "event_type": "submitted",
+    "description": "Задача отправлена на согласование.",
+    "actor": 1,
+    "created_at": "2026-10-21T18:40:35.954Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 6,
+  "fields": {
+    "task": 8,
+    "event_type": "assigned",
+    "description": "Назначен исполнитель: nastya_admin.",
+    "actor": 1,
+    "created_at": "2026-10-21T18:41:31.283Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 7,
+  "fields": {
+    "task": null,
+    "event_type": "updated",
+    "description": "Задача «пупупу» удалена",
+    "actor": null,
+    "created_at": "2026-10-21T18:41:49.558Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 8,
+  "fields": {
+    "task": 9,
+    "event_type": "started",
+    "description": "Исполнитель начал работу.",
+    "actor": 1,
+    "created_at": "2026-10-21T18:47:39.183Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 9,
+  "fields": {
+    "task": 9,
+    "event_type": "completed",
+    "description": "Задача завершена.",
+    "actor": 1,
+    "created_at": "2026-10-21T18:47:50.477Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 10,
+  "fields": {
+    "task": 10,
+    "event_type": "created",
+    "description": "Создана задача «новая».",
+    "actor": 1,
+    "created_at": "2026-10-21T18:56:28.521Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 11,
+  "fields": {
+    "task": null,
+    "event_type": "created",
+    "description": "Создана задача «Тест удаления».",
+    "actor": 1,
+    "created_at": "2026-10-21T18:58:53.074Z"
+  }
+},
+{
+  "model": "dashboard.activity",
+  "pk": 12,
+  "fields": {
+    "task": null,
+    "event_type": "deleted",
+    "description": "Удалена задача «Тест удаления» (ID: 11).",
+    "actor": 1,
+    "created_at": "2026-10-21T19:00:02.770Z"
+  }
+}
+]
