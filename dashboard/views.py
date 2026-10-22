@@ -389,3 +389,39 @@ class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
             Q(task__isnull=True, actor=self.request.user)
         ).select_related("task", "actor").order_by("-created_at")
 
+
+import os
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponseForbidden, HttpResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect
+
+
+@staff_member_required
+@require_POST
+@csrf_protect
+def import_dashboard_data_view(request):
+    if os.environ.get("IMPORT_DASHBOARD_DATA") != "true":
+        return HttpResponseForbidden("Импорт отключён.")
+
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Требуются права суперпользователя.")
+
+    from .import_data import import_dashboard_data
+
+    try:
+        result = import_dashboard_data("dashboard_data.json")
+    except Exception as exc:
+        return HttpResponse(
+            f"Импорт отменён: {exc}",
+            status=400,
+            content_type="text/plain; charset=utf-8",
+        )
+
+    return HttpResponse(
+        "Импорт завершён: "
+        f"{result['projects']} проектов, "
+        f"{result['tasks']} задач, "
+        f"{result['activities']} записей истории."
+    )
