@@ -227,9 +227,7 @@ class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Task.objects.filter(
-            owner=self.request.user
-        ).select_related("project", "owner", "assignee")
+        return Project.objects.all()
 
         status_filter = self.request.query_params.get("status")
         priority_filter = self.request.query_params.get("priority")
