@@ -10,6 +10,7 @@ router.register(r"projects", ProjectViewSet, basename="api-projects")
 router.register(r"history", ActivityViewSet, basename="api-history")
 
 urlpatterns = [
+
     path("", views.dashboard, name="dashboard"),
     path("projects/", views.projects, name="projects"),
     path("tasks/", views.tasks, name="tasks"),
